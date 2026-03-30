@@ -2,8 +2,8 @@
 # DOCUMENTACAO DO SCRIPT
 # ============================================================
 # Arquivo: 01_introducao.R
-# Autor(a): <seu nome>
-# Data: <dd/mm/aaaa>
+# Autor(a): Gislaine Alves
+# Data: 24/03/2026
 # Objetivo: entender os fundamentos da linguagem R
 
 
