@@ -68,12 +68,107 @@ receita <- dados_marketing |>
 
 summary(receita)
 summary(dados_marketing $ status_promocao)
+
 df <- 
 dados_marketing |> 
   mutate(promocao = factor(status_promocao))
 
 # PARA VARIAVEIS DISCRETAS
 summary(df$promocao)
+
+
+# 05. Quantis da Receita --------------------------------------------------
+
+# Quantis amostrais selecionados
+quantis_receita <- dados_marketing |> 
+  summarise(
+    # Mínimo amostral percentil 5
+    p0 = quantile(receita_vendas, 0),
+    p5 = quantile(receita_vendas, 0.05),
+    
+    # Quartis amostrais
+    q1 = quantile(receita_vendas, 0.25),
+    mediana = quantile(receita_vendas, 0.50),
+    q3 =quantile(receita_vendas, 0.75),
+    
+    # Percentil 95 e máxima amostral
+    p95 = quantile(receita_vendas, 0.95),
+    p100 = quantile(receita_vendas, 1)
+  )
+
+# Exibe os quantis calculados
+quantis_receita
+
+
+# 06. Variabilidade da Receita --------------------------------------------
+
+# Resumo com medidas amostrais de variabilidade
+estatisticas_variabilidade <- dados_marketing |> 
+  summarise(
+    # Amplitude amostral
+    amplitude = max(receita_vendas) - min(receita_vendas),
+    
+    # Variancia amostral
+    variancia = var(receita_vendas),
+    
+    # Desvio-padrão amostral
+    desvio_padrao = sd(receita_vendas),
+    
+    # Intervalo Interquartil amostral
+    iqr = IQR(receita_vendas)
+    )
+
+# Exibe o resumo calculado
+estatisticas_variabilidade
+
+
+# 07. Coeficiente de variação ---------------------------------------------
+
+# Resumo com média, devio-padrão e Cv amostrais
+cv_receita <- dados_marketing |> 
+  summarise(
+    
+    # Média amostral
+    média = mean(receita_vendas),
+    
+    # Desvio-padrao Amostral
+    desvio_padrao = sd(receita_vendas),
+    
+    # CV amostral percentual
+    cv_percentual = 100 * desvio_padrao / media
+  )
+
+# Exibe o coefinte de variação
+cv_receita
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

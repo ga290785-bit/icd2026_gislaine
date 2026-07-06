@@ -1,0 +1,283 @@
+---
+lang: pt-BR
+title: "Resolução da Lista de Exercícios 6"
+author: "Gislaine Alves"
+date: 23/06/2026
+format:
+  html:
+    theme: flatly
+    embed-resources: true
+    toc: true
+execute:
+  eval: true
+  echo: true
+  warning: false
+  message: false
+---
+
+```{r}
+#| label: setup
+
+# Exibe valores numéricos sem notação científica
+options(digits = 5, scipen = 999)
+
+# pacotes utilizados
+library(here)
+library(tidyverse)
+library(tidyplots)
+
+# Permite que os gráficos do tidyplots usem o espaço disponível no HTML
+tidyplots_options(width = NA, height = NA)
+
+# Importa o objeto dados_marketing_limpos.rds
+caminho_dados <- here("dados/limpos/dados_marketing_limpos.rds")
+dados_marketing <- read_rds(caminho_dados)
+```
+
+
+
+## Exercício 1
+
+
+**a.** 
+# Calcule o gasto total médio e mediano;
+```{r}
+dados_marketing |> 
+  summarise(
+      # Média Amostral
+    media = mean(gasto_total),
+      # Mediana Amostral
+    mediana = median(gasto_total))
+```
+
+
+**b.**
+# Calcule desvio-padrao e o IQR do gasto_total
+```{r}
+dados_marketing |> 
+  summarise(
+    # Amplitude amostral
+    amplitude = max(gasto_total) - min(gasto_total),
+    
+    # Variancia amostral
+    variancia = var(gasto_total),
+    
+    # Desvio-padrão amostral
+    desvio_padrao = sd(gasto_total),
+    
+    # Intervalo Interquartil amostral
+    iqr = IQR(gasto_total)
+    )
+```
+
+**c.**
+# Calcule os quantis amostrais p5, q1, mediana, q3 e p95
+```{r}
+quantis_gasto <- dados_marketing |> 
+  summarise(
+    # Mínimo amostral percentil 5
+    p0 = quantile(gasto_total, 0),
+    p5 = quantile(gasto_total, 0.05),
+    
+    # Quartis amostrais
+    q1 = quantile(gasto_total, 0.25),
+    mediana = quantile(gasto_total, 0.50),
+    q3 =quantile(gasto_total, 0.75),
+    
+    # Percentil 95 e máxima amostral
+    p95 = quantile(gasto_total, 0.95),
+    p100 = quantile(gasto_total, 1)
+  )
+# Exibe os quantis calculados
+quantis_gasto
+```
+# Interpretação:
+
+- **p5**: cerca de 5% das semanas tiveram gasto total em marketing de até 
+u$ 84,14 mil, cerca de 95% das semanas ficaram acima desse valor.
+
+- **q1**: cerca de 25% das semanas tiveram gasto total em marketing de até
+u$ 99.6 mil, cerca de 75% das semanas tiveram acima desse valor.
+
+- **Mediana**: cerca de 50% das semanas tiveram gasto total em marketing de até
+u$ 110 mil, cerca de 50% das semanas tiveram acima desse valor.
+
+- **q3**: cerca de 75% das semanas tiveram gasto total em marketing de até
+u$ 122 mil, cerca de 25% das semanas tiveram acima desse valor.
+
+- **p95**: cerca de 95% das semanas tiveram gasto total em marketing de até
+u$ 152 mil, cerca de 5% das semanas tiveram acima desse valor.
+
+**obs**: os percentis 5 e 95 definem o intervalo no qual estão 90% dos dados.
+
+
+
+
+**d.** 
+
+- **Valor Tipico**: a média (cerca de $ 113 mil) e a mediana (aproximadamente $110 mil)
+do gasto totalestão proximas. A média um pouco sugere influencia de algumas semanas
+com gasto mais alto.Para descrever o investimento semanal típico, a mediana é uma boa escolha,
+pois reepresenta o centro da distribuição dos dados e é menos afetada por valores 
+muito altos ou baixos em relação à maioria dos dados. Como média e a mediana do
+gasto total estão proximas, usar o gasto total médio também seria aceitavel desde que
+a resposta mencionasse a leve influencia dos valores altos.
+
+- **Dispersão (variabilidade)**: o intervalo interquartil é menor afetado por semanas 
+de gasto nuito alto ou muito baixo, porque ele mede a distancia entre q1 e q3, ou seja,
+ele identifica a faixa onde está a metade intermediaria das semanas, depois de ordenar
+os gastos do menor para o maior. já o desvio-padrãosa a distancia entre os gastos
+de todas as semanas em relação ao gasto médio, por isso, semanas com gasto muito alto 
+ou muito baixo podem afetar bastante seu valor.
+
+- **Semanas Atípicas**: pelo critério deefinido no enunciado, a faixa usual que
+concentrra 90% das semanas vai de aproximadamente $ 84 mil (p5) a $ 152 mil (p95).
+Acima de $ 152 mil, a semana entra no grupo dos 5% maiores gastos e merece atenção
+da equipe. Valores abaixo de $ 84 mil também ficam foram da Faixa usual, 
+mas por gato muito baixo.
+
+
+
+
+
+
+## Exercício 2
+
+
+```{r}
+# Dados sobre o desempenho semanal (R$ mil) de duas equipes de vendas
+desempenho_equipes <- tibble(
+  equipe = rep(c("A", "B"), each = 10),
+  desempenho = c(85, 92, 78, 110, 95, 105, 115, 98, 102, 250,
+                 120, 115, 125, 118, 122, 130, 115, 120, 125, 122)
+)
+```
+
+
+**a.** 
+# calcule: desvio-padrão, amplitude, IQR e coeficiente de variação.
+```{r}
+desempenho_equipes |> 
+  group_by(equipe) |> 
+  sumarise(
+    desvio_padrao = sd (desempenho),
+    amplitude = max(desempenho) - min(desempenho),
+    intervalo_interquartil = IQR(desempenho),
+    cv = (sd(dsempenho)/mean(desempenho))*100
+  )
+```
+
+
+
+
+**b.** Neste item, uma equipe mais consistente é aquela cujo desempenho semanal
+varia menos de uma semana para outra, ou seja, seis resultados ficam mais proximos
+entre si, seem grandes variacoes. Isso não significa, por si só, que a equipe seja 
+melhor, neste caso estamos comparando a dispersão ou variabilidade dos desempenhos.
+
+A equipe B foi mais consistente. Todas as medidas de variabilidade apontam nessa direção:
+desvio-padrao de cerca de 5 contra 49, amplitude de 15 contra 172, intervalo interquartil
+de cerca de 6 contra 16 e cv de 4% contra 44%. O coeficiente de variacao resume bem a
+comparação, porque mede a variabilidadee  em relação ao nível médio de desempenho
+de cada equipe.
+
+Efeito do valor 250: e valor aumenta muito o desvio-padrão, a amplitude e o cv da equipe A.
+O intervalo interquartil é bem menos afetado, porque mede a distancia entre o 1º e o 3º
+quartil: ele sintetiza a faixa onde está a metade intermediaria das semanas, depois de
+ordenar os desempenhos do menor para o maior. A mediana também muda pouco diante desse 
+valor extremo. Por isso, o intervalo intequartil e a mediana são medidas mais robustas,
+isto é medidas qu mudam menos quando aparece um valor muito alto ou muito baixo.
+
+Concluir que uma equipa é melhor: não com apenas estes dados. São somente 10 semanas por equipe, e o valor 250 pode representar uma semansa excepcional, uma meta especial ou até um erro  de registro. Antes de concluir, seria preciso entender a origem desse valor, verificar se as equipes atuarm em dondições comparaveis (mercado, metas, carteira de clientes e periodo ) e analisar mais semanas. a analise mosta uma diferença decritiva , mas ainda não sustenta uma conlcusão geral sobre desempenho.
+
+
+
+
+## Exercício 3
+
+
+**a.** 
+# Construa um histograma com eixos nomeados, indicação da fonte dos dados e tamanho de letra legível.
+# Calcula o tamanho da amostra
+n - length dados(dados_marketing$)
+
+
+#calcula o numero  de bins pela regra de sturges
+k ceiling(1 + log2(n))
+k
+```{r}
+dados_marketing |> 
+  tidyplot(x = gasto_total) |> 
+  add_histogram(bins = 9, fill = "steelblue") |> 
+  adjust_x_axis_title("Receita semanal de vendas (em US$ mil") |> 
+  adjust_y_axis_title("Número de semanas") |> 
+  add_caption("Fonte: dados simulados pelo professor.") |> 
+  adjust_font(fontsize = 12)
+
+```
+
+
+
+**b.** 
+# Contrua um boxplot da mesma variavel
+```{r}
+dados_marketing |> 
+  tidyplot(y = gasto_total) |> 
+  add_boxplot() |> 
+  adjust_y_axis_title("gasto total semanla em marketing( em $ mil") |> 
+  adjust_font(fontsize = 12)
+
+```
+
+
+
+**c.**
+**Interpretação:**
+
+- O boxplot indica que o gasto Total semanla apresentou um distribuição aproximadamente simetrica, com leve assimétrica à direita. O gasto Total, representado pela mediana, ficou  em torno de US$ 110 mil.
+- Cerca de 5 semanas aparecem destacadas no boxplot com valores extremos (ou outliers) muito maiores do que o observado na maioria das semanas. Essas semanas com gasto total muito altos são coerentes com o que o histogramma mostra: existem poucas semanas com gasto muito acima do típico.
+
+
+
+**d.**
+- Sim, o histograma e o boxplot contam a mesma historia: o gasto total está concetrado emm torno de US$ 110 mi, com algumas semanas apresentando gasto maior que provocam alguma assimetria positiva na distribuição.
+
+- Recomendações: Investigar as 5 semanas sinalizadas como outliers pelo boxplot. Elas podem corresponder a campanhas específicas, sazonalidade ou erro de registro. Também eria importante verificar se essas semanas geraram maior receita ou outro resultado esperado.
+
+
+
+## Exercício 4
+
+
+**a.**
+# Construa um boxplot comparativo receitas_vendas por status_concorrencia
+
+```{r}
+dados_marketing |> 
+  tidyplot(x = status_concorrencia, y = receita_vendas) |> 
+  add_boxplot() |> 
+  adjust_x_axis_title("Atividade da concorencia") |> 
+  adjust_y_axis_title("Receita Semanal de vendas (em $ mil)") |> 
+  adjust_font(fontsize = 12)
+```
+
+
+
+
+
+**b.** 
+# Calcule um resumo numerico de apoio por: n, ,edia, mediana e CV
+```{r}
+dados_marketing
+```
+
+
+
+
+**c.**
+
+
+
+
+**d.**
+
